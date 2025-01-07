@@ -14,8 +14,8 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  // Await the searchParams to make sure they are resolved
-  const { page = '1', search = '', sort = 'newest' } = await searchParams || {};
+  // Await the searchParams to ensure they are resolved before usage
+  const { page = '1', search = '', sort = 'newest' } = searchParams || {};
 
   const currentPage = parseInt(page, 10);
 
