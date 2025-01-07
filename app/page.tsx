@@ -6,16 +6,17 @@ import { cookies } from 'next/headers';
 import { getImages } from '@/lib/api';
 
 interface HomeProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     sort?: string;
-  };
+  }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  // Await the searchParams to ensure they are resolved before usage
-  const { page = '1', search = '', sort = 'newest' } = searchParams || {};
+  // Await the searchParams
+  const params = await searchParams;
+  const { page = '1', search = '', sort = 'newest' } = params;
 
   const currentPage = parseInt(page, 10);
 
@@ -24,8 +25,8 @@ export default async function Home({ searchParams }: HomeProps) {
 
   // Await the cookies
   const cookieStore = await cookies();
-  const isLoggedIn = cookieStore.has('session');
-  const isAdmin = cookieStore.get('role')?.value === 'admin';
+  const isLoggedIn = await cookieStore.has('session');
+  const isAdmin = (await cookieStore.get('role'))?.value === 'admin';
 
   return (
     <div className="min-h-screen flex flex-col">
