@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Gallery from './Gallery';
 import { useRouter } from 'next/navigation';
+import SearchSort from '@/components/SearchSort';
 
 interface Image {
   id: number;
@@ -19,8 +20,8 @@ interface GalleryPageProps {
   initialImages: Image[];
   totalPages: number;
   currentPage: number;
-  search: string;
-  sort: string;
+  initialSearch: string;
+  initialSort: string;
   isAdmin: boolean;
 }
 
@@ -28,12 +29,25 @@ export default function GalleryPage({
   initialImages,
   totalPages,
   currentPage,
-  search,
-  sort,
+  initialSearch,
+  initialSort,
   isAdmin,
 }: GalleryPageProps) {
   const [images, setImages] = useState(initialImages);
+  const [search, setSearch] = useState(initialSearch);
+  const [sort, setSort] = useState(initialSort);
+  const [page, setPage] = useState(currentPage);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const res = await fetch(`/api/images?page=${page}&search=${search}&sort=${sort}`);
+      const data = await res.json();
+      setImages(data.images);
+    };
+
+    fetchImages();
+  }, [page, search, sort]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -48,50 +62,40 @@ export default function GalleryPage({
     }
   };
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSort = e.target.value;
-    router.push(`/?page=${currentPage}&search=${search}&sort=${newSort}`);
+  const handleSearchChange = (newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1);
+    router.push(`/?page=1&search=${newSearch}&sort=${sort}`);
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    router.push(`/?page=${page}&search=${search}&sort=${newSort}`);
   };
 
   return (
     <>
-      <div className="mb-4 flex justify-between items-center">
-        <form className="flex items-center">
-          <input
-            type="text"
-            name="search"
-            placeholder="Search by prompt"
-            className="px-3 py-2 border rounded-l"
-            defaultValue={search}
-          />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-r">
-            Search
-          </button>
-        </form>
-        <select
-          name="sort"
-          onChange={handleSortChange}
-          defaultValue={sort}
-          className="px-3 py-2 border rounded"
-        >
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
-          <option value="prompt_asc">Prompt A-Z</option>
-          <option value="prompt_desc">Prompt Z-A</option>
-        </select>
-      </div>
+      <SearchSort
+        search={search}
+        sort={sort}
+        onSearchChange={handleSearchChange}
+        onSortChange={handleSortChange}
+      />
       <Gallery images={images} onDelete={handleDelete} isAdmin={isAdmin} />
       <div className="mt-8 flex justify-center">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-          <a
+          <button
             key={pageNum}
-            href={`/?page=${pageNum}&search=${search}&sort=${sort}`}
+            onClick={() => {
+              setPage(pageNum);
+              router.push(`/?page=${pageNum}&search=${search}&sort=${sort}`);
+            }}
             className={`mx-1 px-3 py-2 rounded ${
-              pageNum === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              pageNum === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
             {pageNum}
-          </a>
+          </button>
         ))}
       </div>
     </>
