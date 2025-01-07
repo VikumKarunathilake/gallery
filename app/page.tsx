@@ -14,13 +14,16 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  // Destructure searchParams with fallback values
-  const { page = '1', search = '', sort = 'newest' } = searchParams || {};
+  // Await the searchParams to make sure they are resolved
+  const { page = '1', search = '', sort = 'newest' } = await searchParams || {};
 
   const currentPage = parseInt(page, 10);
+
+  // Await the result from getImages
   const { images, totalPages, currentPage: apiCurrentPage } = await getImages(currentPage, search, sort);
 
-  const cookieStore = await cookies(); // Await the cookie store
+  // Await the cookies
+  const cookieStore = await cookies();
   const isLoggedIn = cookieStore.has('session');
   const isAdmin = cookieStore.get('role')?.value === 'admin';
 
