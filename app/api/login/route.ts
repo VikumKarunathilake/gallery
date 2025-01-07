@@ -4,13 +4,13 @@ import { cookies } from 'next/headers';
 export async function POST(request: Request) {
   const { username, password } = await request.json();
 
-  // In a real application, you would validate the credentials against a database
+  const cookieStore = await cookies();
+
   if (username === 'admin' && password === 'password') {
-    cookies().set('session', 'authenticated', { httpOnly: true });
-    cookies().set('role', 'admin', { httpOnly: true });
+    cookieStore.set('session', 'authenticated', { httpOnly: true });
+    cookieStore.set('role', 'admin', { httpOnly: true });
     return NextResponse.json({ success: true });
   } else {
     return NextResponse.json({ success: false }, { status: 401 });
   }
 }
-

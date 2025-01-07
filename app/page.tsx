@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Gallery from '@/components/Gallery';
+import GalleryPage from '@/components/GalleryPage';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { cookies } from 'next/headers';
@@ -52,7 +52,7 @@ export default async function Home({
 
   const { images, totalPages, currentPage } = await getImages(page, search, sort);
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies(); // Await the cookies here
   const isLoggedIn = cookieStore.has('session');
   const isAdmin = cookieStore.get('role')?.value === 'admin';
 
@@ -61,51 +61,16 @@ export default async function Home({
       <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} onLogout={() => {}} />
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Image Gallery</h1>
-        <div className="mb-4 flex justify-between items-center">
-          <form className="flex items-center">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search by prompt"
-              className="px-3 py-2 border rounded-l"
-              defaultValue={search}
-            />
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-r">
-              Search
-            </button>
-          </form>
-          <select
-            name="sort"
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              url.searchParams.set('sort', e.target.value);
-              window.location.href = url.toString();
-            }}
-            defaultValue={sort}
-            className="px-3 py-2 border rounded"
-          >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="prompt_asc">Prompt A-Z</option>
-            <option value="prompt_desc">Prompt Z-A</option>
-          </select>
-        </div>
         <Suspense fallback={<div>Loading...</div>}>
-          <Gallery images={images} onDelete={() => {}} isAdmin={isAdmin} />
+          <GalleryPage
+            initialImages={images}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            search={search}
+            sort={sort}
+            isAdmin={isAdmin}
+          />
         </Suspense>
-        <div className="mt-8 flex justify-center">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-            <a
-              key={pageNum}
-              href={`/?page=${pageNum}&search=${search}&sort=${sort}`}
-              className={`mx-1 px-3 py-2 rounded ${
-                pageNum === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200'
-              }`}
-            >
-              {pageNum}
-            </a>
-          ))}
-        </div>
       </main>
       <Footer />
     </div>

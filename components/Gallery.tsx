@@ -1,5 +1,3 @@
-"use client"
-
 import ImageCard from './ImageCard';
 import { useState } from 'react';
 import ImageModal from './ImageModal';
