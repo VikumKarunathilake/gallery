@@ -37,13 +37,17 @@ export default function GalleryPage({
   const [search, setSearch] = useState(initialSearch);
   const [sort, setSort] = useState(initialSort);
   const [page, setPage] = useState(currentPage);
+  const [refreshing, setRefreshing] = useState(false);  // New state for refreshing
   const router = useRouter();
 
+  // Fetch images based on page, search, and sort
   useEffect(() => {
     const fetchImages = async () => {
+      setRefreshing(true);  // Set refreshing to true before starting the fetch
       const res = await fetch(`/api/images?page=${page}&search=${search}&sort=${sort}`);
       const data = await res.json();
       setImages(data.images);
+      setRefreshing(false);  // Set refreshing to false after the fetch is complete
     };
 
     fetchImages();
@@ -73,6 +77,15 @@ export default function GalleryPage({
     router.push(`/?page=${page}&search=${search}&sort=${newSort}`);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    const res = await fetch(`/api/images?page=1&search=${search}&sort=${sort}`);
+    const data = await res.json();
+    setImages(data.images);
+    setPage(1);
+    setRefreshing(false);
+  };
+
   return (
     <>
       <SearchSort
@@ -80,6 +93,8 @@ export default function GalleryPage({
         sort={sort}
         onSearchChange={handleSearchChange}
         onSortChange={handleSortChange}
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
       />
       <Gallery images={images} onDelete={handleDelete} isAdmin={isAdmin} />
       <div className="mt-8 flex justify-center">
@@ -101,4 +116,3 @@ export default function GalleryPage({
     </>
   );
 }
-

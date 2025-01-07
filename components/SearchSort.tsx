@@ -6,9 +6,10 @@ interface SearchSortProps {
   sort: string;
   onSearchChange: (search: string) => void;
   onSortChange: (sort: string) => void;
-  onRefresh: () => void;
-  refreshing: boolean;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
+
 
 export default function SearchSort({
   search,
