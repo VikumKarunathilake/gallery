@@ -5,13 +5,17 @@ import Footer from '@/components/Footer';
 import { cookies } from 'next/headers';
 import { getImages } from '@/lib/api';
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { page?: string; search?: string; sort?: string };
-}) {
-  // Directly destructure searchParams without awaiting
-  const { page = '1', search = '', sort = 'newest' } = searchParams;
+interface HomeProps {
+  searchParams: {
+    page?: string;
+    search?: string;
+    sort?: string;
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  // Destructure searchParams with fallback values
+  const { page = '1', search = '', sort = 'newest' } = searchParams || {};
 
   const currentPage = parseInt(page, 10);
   const { images, totalPages, currentPage: apiCurrentPage } = await getImages(currentPage, search, sort);
