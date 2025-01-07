@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RefreshCw } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface SearchSortProps {
   search: string;
@@ -15,8 +15,6 @@ export default function SearchSort({
   sort,
   onSearchChange,
   onSortChange,
-  onRefresh,
-  refreshing
 }: SearchSortProps) {
   return (
     <div className="mb-4 flex justify-between items-center space-x-4">
