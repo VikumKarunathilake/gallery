@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { cookies } from 'next/headers';
 import { getImages } from '@/lib/api';
+import Head from 'next/head';
 
 interface HomeProps {
   searchParams: Promise<{
@@ -29,6 +30,15 @@ export default async function Home({ searchParams }: HomeProps) {
   const isAdmin = (await cookieStore.get('role'))?.value === 'admin';
 
   return (
+    <>
+    <Head>
+      <title>AI-Generated Art Gallery - Unique Images Created with AI Technology</title>
+      <meta name="description" content="Discover a stunning collection of AI-generated images powered by Flux technology. Explore a variety of artworks, from abstract compositions to lifelike scenery. Each image is uniquely created by artificial intelligence, offering a glimpse into the future of digital art." />
+      <meta name="keywords" content="AI-generated art, Flux AI, digital art, artificial intelligence, abstract images, unique art, AI creativity" />
+      <meta property="og:title" content="AI-Generated Art Gallery - Unique Images Created with Flux AI Technology" />
+      <meta property="og:description" content="Discover a stunning collection of AI-generated images powered by Flux technology. Explore a variety of artworks, from abstract compositions to lifelike scenery. Each image is uniquely created by artificial intelligence, offering a glimpse into the future of digital art." />
+      <meta property="og:type" content="website" />
+    </Head>
     <div className="min-h-screen flex flex-col">
       <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
       <main className="flex-grow container mx-auto px-4 py-8">
@@ -46,5 +56,6 @@ export default async function Home({ searchParams }: HomeProps) {
       </main>
       <Footer />
     </div>
+    </>
   );
 }
