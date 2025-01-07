@@ -10,8 +10,8 @@ export default async function Home({
 }: {
   searchParams: { page?: string; search?: string; sort?: string };
 }) {
-  // Await searchParams to ensure dynamic values are accessed asynchronously
-  const { page = '1', search = '', sort = 'newest' } = await searchParams;
+  // Directly destructure searchParams without awaiting
+  const { page = '1', search = '', sort = 'newest' } = searchParams;
 
   const currentPage = parseInt(page, 10);
   const { images, totalPages, currentPage: apiCurrentPage } = await getImages(currentPage, search, sort);
