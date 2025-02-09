@@ -40,7 +40,8 @@ export default function ImageModal({ image, onClose }: ImageModalProps) {
             className="rounded-lg object-contain border border-gray-200 shadow-md"
             width={image.width}
             height={image.height}
-            loading="lazy"
+            layout="responsive"
+            loading="eager"
             onError={(e) => (e.currentTarget.src = "/fallback-image.png")}
             style={{
               maxWidth: "100%",
